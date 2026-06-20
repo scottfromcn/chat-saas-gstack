@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "convoy-chat",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  // Static assets: Vite builds the React frontend into ./dist/assets
+  // Worker runs first on every request so /api and /ws routes are dispatched
+  // by Hono; anything else falls through to the ASSETS binding (SPA).
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "single-page-application"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CHAT_ROOM",
+        "class_name": "ChatRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["ChatRoom"]
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "chat-saas-gstack-db",
+      "database_id": "6eee53ff-4f9d-4357-95e2-1dc5204cb33a",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
